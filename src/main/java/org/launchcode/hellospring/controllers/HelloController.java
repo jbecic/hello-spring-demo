@@ -1,10 +1,13 @@
 package org.launchcode.hellospring.controllers;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
-@ResponseBody
 @RequestMapping("hello") //route for all start with localhost:8080/hello
 public class HelloController {
 
@@ -17,6 +20,7 @@ public class HelloController {
 
     // lives at /hello/goodbye
     @GetMapping("goodbye")
+    @ResponseBody
     public String goodBye() {
         return "Goodbye, Spring!";
     }
@@ -24,17 +28,22 @@ public class HelloController {
     // lives at /hello/hello
     // Handles request of the form /hello?name=LaunchCode
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "hello")
-    public String helloWithQueryParam(@RequestParam String name) {
-        return "Hello, " + name + "!";
+    public String helloWithQueryParam(@RequestParam String name, Model model) {
+        String greeting = "Hello, " + name + "!";
+        model.addAttribute("greeting", greeting);
+        return "hello";
     }
 
     // Handles requests of the form /hello/LaunchCode
     @GetMapping("{name}")
-    public String helloWithPathParam(@PathVariable String name) {
-        return "Hello, " + name + "!";
+    public String helloWithPathParam(@PathVariable String name, Model model) {
+        String greeting = "Hello, " + name + "!";
+        model.addAttribute("greeting", greeting);
+        return "hello";
     }
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "language")
+    @ResponseBody
     public static String createMessage(String name,@RequestParam String language) {
         String greeting = "Hello, ";
         if (language.equals("French")) {
@@ -55,20 +64,16 @@ public class HelloController {
     //lives at /hello/form
     @GetMapping("form")
     public String helloForm() {
-        return "<html>" +
-                "<body>" +
-                "<form action='language' method='post'>" + //submit a request to hello/ language
-                "<input type='text' name='name'>" +
-                "<select name='language'>" +
-                    "<option value='English'>English</option>" +
-                    "<option value='French'>French</option>" +
-                    "<option value='Spanish'>Spanish</option>" +
-                    "<option value='German'>German</option>" +
-                    "<option value='Italian'>Italian</option>" +
-                "</select>" +
-                "<input type='submit' value='Greet me!'>" +
-                "</form>" +
-                "</body>" +
-                "</html>";
+        return "form";
+    }
+
+    @GetMapping("hello-names")
+    public String helloNames(Model model) {
+        List<String> names = new ArrayList<>();
+        names.add("LaunchCode");
+        names.add("Java");
+        names.add("JavaScript");
+        model.addAttribute("names", names);
+        return "hello-list";
     }
 }
